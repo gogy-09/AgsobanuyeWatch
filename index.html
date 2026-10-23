@@ -1,0 +1,657 @@
+
+<!DOCTYPE html>
+<html lang="rw">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#090b12">
+<meta name="description" content="AgasobanuyeWatch - Menya filime kandi urebe iziboneka ku mbuga zemewe.">
+<title>AgasobanuyeWatch | Reba Filime</title>
+
+<style>
+:root {
+  --bg: #090b12;
+  --panel: #141824;
+  --red: #e50914;
+  --text: #ffffff;
+  --muted: #a6adbb;
+}
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+}
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 5%;
+  background: #0d1019;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  border-bottom: 1px solid #242837;
+}
+.logo {
+  color: var(--red);
+  font-size: 23px;
+  font-weight: 900;
+  white-space: nowrap;
+  text-decoration: none;
+}
+.logo span { color: white; }
+nav { display: flex; gap: 18px; }
+nav a {
+  color: white;
+  text-decoration: none;
+  font-size: 14px;
+}
+nav a:hover { color: var(--red); }
+.search {
+  width: 230px;
+  max-width: 40%;
+  background: #202534;
+  color: white;
+  border: 1px solid #34394a;
+  border-radius: 7px;
+  padding: 11px;
+  outline: none;
+}
+.search:focus { border-color: var(--red); }
+.hero {
+  min-height: 390px;
+  padding: 75px 6%;
+  display: flex;
+  align-items: center;
+  background:
+    linear-gradient(90deg, #090b12 5%, #090b12dd 45%, #090b1250),
+    linear-gradient(0deg, #090b12, transparent 60%),
+    url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1600&q=85")
+    center/cover;
+}
+.hero-content { max-width: 600px; }
+.tag {
+  color: #ff4b55;
+  font-size: 12px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+.hero h1 { font-size: clamp(32px, 5vw, 52px); margin: 15px 0; }
+.hero p { color: #d1d5df; line-height: 1.7; max-width: 500px; }
+.btn {
+  display: inline-block;
+  padding: 12px 20px;
+  margin: 10px 8px 0 0;
+  border: 0;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  text-decoration: none;
+}
+.primary { background: var(--red); color: white; }
+.secondary { background: #303647; color: white; }
+.btn:hover { filter: brightness(1.15); }
+main { padding: 25px 5%; min-height: 400px; }
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+.section-heading h2 { font-size: 22px; margin: 0; }
+.muted { color: var(--muted); font-size: 13px; }
+.categories {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin: 20px 0 25px;
+}
+.category {
+  border: 1px solid #303647;
+  background: #171c29;
+  color: white;
+  border-radius: 20px;
+  padding: 9px 16px;
+  cursor: pointer;
+}
+.category.active, .category:hover {
+  background: var(--red);
+  border-color: var(--red);
+}
+.movie-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 22px 15px;
+}
+.movie { min-width: 0; cursor: pointer; }
+.poster {
+  position: relative;
+  aspect-ratio: 2 / 3;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #202638;
+}
+.poster img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform .3s;
+}
+.movie:hover .poster img { transform: scale(1.06); }
+.poster-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  text-align: center;
+  font-size: 22px;
+  font-weight: bold;
+  background: linear-gradient(145deg, #30364d, #11131c 75%);
+}
+.quality {
+  position: absolute;
+  top: 9px;
+  left: 8px;
+  background: var(--red);
+  border-radius: 3px;
+  font-size: 10px;
+  padding: 5px 7px;
+  font-weight: bold;
+}
+.movie h3 {
+  font-size: 14px;
+  margin: 11px 0 7px;
+  line-height: 1.4;
+}
+.movie-info { color: var(--muted); font-size: 12px; }
+.movie:hover h3 { color: #ff6069; }
+.empty {
+  text-align: center;
+  color: var(--muted);
+  padding: 50px 0;
+  grid-column: 1 / -1;
+}
+footer {
+  border-top: 1px solid #242837;
+  padding: 30px 5%;
+  text-align: center;
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 13px;
+}
+.modal {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  background: #000d;
+  padding: 20px;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+}
+.modal.open { display: flex; }
+.modal-box {
+  background: #151a27;
+  border: 1px solid #303647;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 700px;
+  padding: 25px;
+  position: relative;
+}
+.close {
+  float: right;
+  color: white;
+  background: #303647;
+  border: 0;
+  padding: 8px 12px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.modal h2 { margin-top: 25px; }
+.modal p { line-height: 1.7; color: #c5cad5; }
+.video-area {
+  margin-top: 20px;
+  background: #050608;
+  border-radius: 8px;
+  overflow: hidden;
+}
+video { width: 100%; max-height: 380px; display: block; }
+@media (max-width: 950px) {
+  .movie-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  nav { gap: 10px; }
+}
+@media (max-width: 650px) {
+  header { flex-wrap: wrap; padding: 14px 4%; }
+  nav { order: 3; width: 100%; overflow-x: auto; padding: 5px 0; }
+  .search { max-width: 55%; width: 100%; }
+  .hero { min-height: 330px; padding: 45px 5%; }
+  main { padding: 18px 4%; }
+  .movie-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px 12px; }
+  .section-heading h2 { font-size: 18px; }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <a class="logo" href="#home">AGASOBANUYE<span>WATCH</span></a>
+
+  <nav>
+    <a href="#home">Ahabanza</a>
+    <a href="#movies">Filime</a>
+    <a href="#categories">Ibyiciro</a>
+    <a href="#about">Abo turi bo</a>
+  </nav>
+
+  <input id="search" class="search" type="search"
+         placeholder="Shaka filime..." aria-label="Shaka filime">
+</header>
+
+<section class="hero" id="home">
+  <div class="hero-content">
+    <div class="tag">IKAZE KURI AGASOBANUYEWATCH</div>
+    <h1>Filime nziza,<br>mu Kinyarwanda.</h1>
+    <p>
+      Menya filime nshya, izo ukunda n'inkuru zitandukanye.
+      Hitamo filime ushaka, umenye ibyayo, kandi urebe iziboneka
+      ku mbuga zemewe.
+    </p>
+    <a href="#movies" class="btn primary">Reba filime</a>
+    <button class="btn secondary" id="randomBtn">Hitamo imwe</button>
+  </div>
+</section>
+
+<main id="movies">
+  <div class="section-heading">
+    <h2>Filime zatoranyijwe</h2>
+    <span class="muted" id="count"></span>
+  </div>
+
+  <div class="categories" id="categories">
+    <button class="category active" data-category="Zose">Zose</button>
+    <button class="category" data-category="Action">Action</button>
+    <button class="category" data-category="Drama">Drama</button>
+    <button class="category" data-category="Comedy">Comedy</button>
+    <button class="category" data-category="Adventure">Adventure</button>
+  </div>
+
+  <div class="movie-grid" id="movieGrid"></div>
+</main>
+
+<footer id="about">
+  <strong style="color:white">AgasobanuyeWatch</strong>
+  <p>Urubuga rw'abakunda filime n'inkuru nziza.</p>
+  <p>
+    Filime zigaragara hano ni iz'urugero rwo kwerekana uko urubuga rukora.
+    Ongeramo filime n'amashusho ufitiye uburenganzira bwo gukoresha.
+  </p>
+  <p>© <span id="year"></span> AgasobanuyeWatch. All rights reserved.</p>
+</footer>
+
+<div class="modal" id="movieModal" role="dialog"
+     aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-box">
+    <button class="close" id="closeModal" aria-label="Funga">✕ Funga</button>
+    <div style="clear:both"></div>
+    <div class="tag">IBISOBANURO BYA FILIME</div>
+    <h2 id="modalTitle"></h2>
+    <p id="modalInfo"></p>
+    <p id="modalDescription"></p>
+    <div id="videoArea" class="video-area"></div>
+    <div style="margin-top:15px">
+      <button class="btn primary" id="watchBtn">Reba filime</button>
+      <button class="btn secondary" id="shareBtn">Sangiza abandi</button>
+    </div>
+    <p class="muted" id="modalMessage"></p>
+  </div>
+</div>
+
+<script>
+// FILIME Z'URUGERO: ongeramo izifitiye uburenganzira bwo gukwirakwiza.
+const movies = [
+  {
+    id: 1,
+    title: "Intwari y'Umujyi",
+    category: "Action",
+    year: 2025,
+    duration: "1h 45min",
+    description: "Inkuru y'umuntu uharanira kurinda umuryango we no kuzana amahoro mu mujyi.",
+    poster: "",
+    video: ""
+  },
+  {
+    id: 2,
+    title: "Urukundo n'Ubuzima",
+    category: "Drama",
+    year: 2024,
+    duration: "1h 35min",
+    description: "Inkuru y'abantu bahura n'ibigeragezo mu buzima no mu rukundo.",
+    poster: "",
+    video: ""
+  },
+  {
+    id: 3,
+    title: "Inshuti Zisekeje",
+    category: "Comedy",
+    year: 2025,
+    duration: "1h 20min",
+    description: "Inshuti zihura n'ibintu bitangaje kandi bisekeje mu rugendo rwazo.",
+    poster: "",
+    video: ""
+  },
+  {
+    id: 4,
+    title: "Urugendo Rutazibagirana",
+    category: "Adventure",
+    year: 2024,
+    duration: "1h 50min",
+    description: "Urugendo rwo gushaka ukuri no kuvumbura ahantu hashya.",
+    poster: "",
+    video: ""
+  },
+  {
+    id: 5,
+    title: "Ibanga ry'Umuryango",
+    category: "Drama",
+    year: 2025,
+    duration: "1h 40min",
+    description: "Umuryango ugerageza kumenya ukuri kwari kumaze imyaka myinshi guhishwe.",
+    poster: "",
+    video: ""
+  },
+  {
+    id: 6,
+    title: "Intambara y'Intwari",
+    category: "Action",
+    year: 2023,
+    duration: "1h 55min",
+    description: "Intwari ihaguruka kugira ngo irengere abantu bayo.",
+    poster: "",
+    video: ""
+  },
+  {
+    id: 7,
+    title: "Umunsi w'Ibimenyetso",
+    category: "Comedy",
+    year: 2024,
+    duration: "1h 15min",
+    description: "Umunsi umwe uhinduka inkuru yuzuye ibintu bitunguranye.",
+    poster: "",
+    video: ""
+  },
+  {
+    id: 8,
+    title: "Ishyamba ry'Amabanga",
+    category: "Adventure",
+    year: 2025,
+    duration: "1h 42min",
+    description: "Itsinda ry'abagenzi rivumbura amabanga mu rugendo rwo mu ishyamba.",
+    poster: "",
+    video: ""
+  },
+  {
+    id: 9,
+    title: "Inzozi z'Ubuzima",
+    category: "Drama",
+    year: 2023,
+    duration: "1h 30min",
+    description: "Inkuru ivuga ku kwihangana, icyizere no kugera ku ntego.",
+    poster: "",
+    video: ""
+  },
+  {
+    id: 10,
+    title: "Umurinzi",
+    category: "Action",
+    year: 2025,
+    duration: "1h 48min",
+    description: "Umurinzi ahura n'ikibazo gikomeye agomba gukemura.",
+    poster: "",
+    video: ""
+  }
+];
+
+const grid = document.getElementById("movieGrid");
+const searchInput = document.getElementById("search");
+const count = document.getElementById("count");
+const modal = document.getElementById("movieModal");
+
+let selectedCategory = "Zose";
+let selectedMovie = null;
+
+function renderMovies() {
+  const query = searchInput.value.trim().toLowerCase();
+
+  const filtered = movies.filter(movie => {
+    const matchesCategory =
+      selectedCategory === "Zose" ||
+      movie.category === selectedCategory;
+
+    const matchesSearch =
+      movie.title.toLowerCase().includes(query) ||
+      movie.category.toLowerCase().includes(query) ||
+      movie.description.toLowerCase().includes(query);
+
+    return matchesCategory && matchesSearch;
+  });
+
+  count.textContent = filtered.length + " filime";
+  grid.replaceChildren();
+
+  if (filtered.length === 0) {
+    const empty = document.createElement("div");
+    empty.className = "empty";
+    empty.textContent = "Nta filime ibonetse. Gerageza irindi zina.";
+    grid.appendChild(empty);
+    return;
+  }
+
+  filtered.forEach(movie => {
+    const card = document.createElement("article");
+    card.className = "movie";
+    card.tabIndex = 0;
+    card.setAttribute("role", "button");
+    card.setAttribute("aria-label", "Ibisobanuro bya " + movie.title);
+
+    const poster = document.createElement("div");
+    poster.className = "poster";
+
+    if (movie.poster) {
+      const img = document.createElement("img");
+      img.src = movie.poster;
+      img.alt = "Ifoto ya " + movie.title;
+      img.loading = "lazy";
+
+      img.onerror = () => {
+        img.remove();
+        const fallback = document.createElement("div");
+        fallback.className = "poster-placeholder";
+        fallback.textContent = movie.title;
+        poster.prepend(fallback);
+      };
+
+      poster.appendChild(img);
+    } else {
+      const fallback = document.createElement("div");
+      fallback.className = "poster-placeholder";
+      fallback.textContent = movie.title;
+      poster.appendChild(fallback);
+    }
+
+    const quality = document.createElement("span");
+    quality.className = "quality";
+    quality.textContent = "FILIME";
+    poster.appendChild(quality);
+
+    const title = document.createElement("h3");
+    title.textContent = movie.title;
+
+    const info = document.createElement("div");
+    info.className = "movie-info";
+    info.textContent = movie.year + " • " + movie.category;
+
+    card.append(poster, title, info);
+    card.addEventListener("click", () => openMovie(movie));
+
+    card.addEventListener("keydown", event => {
+      if (event.key === "Enter" || event.key === " ") {
+        event.preventDefault();
+        openMovie(movie);
+      }
+    });
+
+    grid.appendChild(card);
+  });
+}
+
+function openMovie(movie) {
+  selectedMovie = movie;
+
+  document.getElementById("modalTitle").textContent = movie.title;
+  document.getElementById("modalInfo").textContent =
+    movie.year + " • " + movie.category + " • " + movie.duration;
+
+  document.getElementById("modalDescription").textContent =
+    movie.description;
+
+  document.getElementById("modalMessage").textContent = "";
+  document.getElementById("videoArea").replaceChildren();
+
+  modal.classList.add("open");
+  document.body.style.overflow = "hidden";
+}
+
+function closeMovie() {
+  const video = document.querySelector("#videoArea video");
+  if (video) video.pause();
+
+  modal.classList.remove("open");
+  document.body.style.overflow = "";
+}
+
+document.getElementById("closeModal")
+  .addEventListener("click", closeMovie);
+
+modal.addEventListener("click", event => {
+  if (event.target === modal) closeMovie();
+});
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") closeMovie();
+});
+
+searchInput.addEventListener("input", renderMovies);
+
+document.querySelectorAll(".category").forEach(button => {
+  button.addEventListener("click", () => {
+    selectedCategory = button.dataset.category;
+
+    document.querySelectorAll(".category").forEach(item => {
+      item.classList.toggle("active", item === button);
+    });
+
+    renderMovies();
+  });
+});
+
+document.getElementById("randomBtn").addEventListener("click", () => {
+  const available = movies.filter(movie =>
+    selectedCategory === "Zose" ||
+    movie.category === selectedCategory
+  );
+
+  if (available.length) {
+    openMovie(available[Math.floor(Math.random() * available.length)]);
+  }
+});
+
+document.getElementById("watchBtn").addEventListener("click", () => {
+  if (!selectedMovie) return;
+
+  const message = document.getElementById("modalMessage");
+  const area = document.getElementById("videoArea");
+  area.replaceChildren();
+
+  if (!selectedMovie.video) {
+    message.textContent =
+      "Iyi ni filime y'urugero. Ongeramo URL y'amashusho yemewe kugira ngo uyirebe.";
+    return;
+  }
+
+  const videoUrl = selectedMovie.video;
+
+  if (!/^https:\/\//i.test(videoUrl)) {
+    message.textContent = "URL y'amashusho igomba kuba ifite HTTPS.";
+    return;
+  }
+
+  const player = document.createElement("video");
+  player.controls = true;
+  player.preload = "metadata";
+  player.playsInline = true;
+
+  const source = document.createElement("source");
+  source.src = videoUrl;
+  source.type = "video/mp4";
+
+  player.appendChild(source);
+  area.appendChild(player);
+
+  message.textContent =
+    "Kanda Play kugira ngo utangize amashusho.";
+
+  player.play().catch(() => {
+    message.textContent =
+      "Kanda Play cyangwa ugenzure niba URL y'amashusho ikora.";
+  });
+});
+
+document.getElementById("shareBtn").addEventListener("click", async () => {
+  const shareData = {
+    title: selectedMovie
+      ? selectedMovie.title + " | AgasobanuyeWatch"
+      : "AgasobanuyeWatch",
+    text: selectedMovie
+      ? "Menya ibyerekeye " + selectedMovie.title + " kuri AgasobanuyeWatch."
+      : "AgasobanuyeWatch"
+  };
+
+  try {
+    if (navigator.share) {
+      await navigator.share(shareData);
+    } else if (navigator.clipboard) {
+      await navigator.clipboard.writeText(location.href);
+      document.getElementById("modalMessage").textContent =
+        "Link yakoporowe.";
+    } else {
+      document.getElementById("modalMessage").textContent =
+        "Koporora link iri muri address bar ya browser.";
+    }
+  } catch (error) {
+    if (error.name !== "AbortError") {
+      document.getElementById("modalMessage").textContent =
+        "Ntibyashobotse gusangiza link ubu.";
+    }
+  }
+});
+
+document.getElementById("year").textContent = new Date().getFullYear();
+renderMovies();
+</script>
+
+</body>
+</html>
+
+
+  
